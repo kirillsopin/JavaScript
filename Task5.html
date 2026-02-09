@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html lang="uk">
+<head>
+    <meta charset="UTF-8">
+    <title>Завдання 5</title>
+</head>
+<body>
+
+<script>
+let day = prompt("Введіть день");
+let month = prompt("Введіть місяць");
+let year = prompt("Введіть рік");
+
+let days = [31,28,31,30,31,30,31,31,30,31,30,31];
+
+if (year % 400 == 0 || (year % 4 == 0 && year % 100 != 0)) {
+    days[1] = 29;
+}
+
+day++;
+
+if (day > days[month - 1]) {
+    day = 1;
+    month++;
+}
+
+if (month > 12) {
+    month = 1;
+    year++;
+}
+
+alert(day + "." + month + "." + year);
+</script>
+
+</body>
+</html>

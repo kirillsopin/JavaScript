@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<html lang="uk">
+<head>
+    <meta charset="UTF-8">
+    <title>Завдання 9</title>
+</head>
+<body>
+
+<script>
+let min = 0;
+let max = 100;
+
+while (true) {
+    let middle = Math.floor((min + max) / 2);
+    let answer = prompt("Ваше число > " + middle + ", < " + middle + " чи == " + middle + "?");
+
+    if (answer == "==") {
+        alert("Число вгадано: " + middle);
+        break;
+    }
+    if (answer == ">") {
+        min = middle + 1;
+    }
+    if (answer == "<") {
+        max = middle - 1;
+    }
+}
+</script>
+
+</body>
+</html>
