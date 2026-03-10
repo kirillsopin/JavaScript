@@ -1,80 +1,115 @@
-function task2() {
+function task1(){
 
-let url = "https://www.google.com/search?q=javascript";
-let regex = /https?:\/\/(www\.)?([^\/]+)/;
+let arr = [];
+let arr2 = [];
 
-let result = url.match(regex);
+for(let i = 0; i < 50; i++){
 
-alert(result[2]);
+let num = Math.floor(Math.random()*100) - 50;
+
+arr.push(num);
+
+if(num >= -5 && num <= 5){
+arr2.push(num);
+}
+
+}
+
+alert("Массив:\n" + arr.join(", "));
+alert("Числа от -5 до 5:\n" + arr2.join(", "));
+alert("Количество: " + arr2.length);
 
 }
 
 
-function task3() {
 
-let ip = "192.168.1.1";
+function task2(){
 
-let regex = /^(25[0-5]|2[0-4]\d|1\d\d|\d\d|\d)\.(25[0-5]|2[0-4]\d|1\d\d|\d\d|\d)\.(25[0-5]|2[0-4]\d|1\d\d|\d\d|\d)\.(25[0-5]|2[0-4]\d|1\d\d|\d\d|\d)$/;
+let arr = [];
 
-alert(regex.test(ip));
+for(let i = 0; i < 20; i++){
+arr.push(Math.floor(Math.random()*100) - 50);
+}
+
+let sum = 0;
+let minPositive = 1000;
+
+for(let i = 0; i < arr.length; i++){
+
+if(arr[i] < 0){
+sum += arr[i];
+}
+
+if(arr[i] > 0 && arr[i] < minPositive){
+minPositive = arr[i];
+}
+
+}
+
+if(sum < -100){
+sum = sum + minPositive;
+}
+
+alert("Массив:\n" + arr.join(", "));
+alert("Результат: " + sum);
 
 }
 
 
-function task4() {
 
-let login = "user_123";
+function task3(){
 
-let regex = /^[A-Za-z][A-Za-z0-9_]{2,15}$/;
+let arr = [];
 
-alert(regex.test(login));
+for(let i = 0; i < 6; i++){
+arr.push(Math.floor(Math.random()*50));
+}
+
+let diff = [];
+
+for(let i = 0; i < arr.length-1; i++){
+diff.push(arr[i+1] - arr[i]);
+}
+
+alert("Исходный массив:\n" + arr.join(", "));
+alert("Массив разницы:\n" + diff.join(", "));
 
 }
 
 
-function task5() {
 
-let text = "Текст <b>жирний</b> і <i>курсив</i>";
+function task4(){
 
-let regex = /<\/?[a-z]+>/gi;
+let words = [];
+let w = prompt("Введите слово (пусто чтобы закончить)");
 
-let result = text.match(regex);
+while(w != ""){
 
-alert(result);
+words.push(w);
 
-}
-
-
-function task6() {
-
-let color = "#ff5733";
-
-let regex = /^#([0-9a-fA-F]{6}|[0-9a-fA-F]{3})$/;
-
-alert(regex.test(color));
+w = prompt("Введите слово (пусто чтобы закончить)");
 
 }
 
+let oldWord = prompt("Какое слово заменить?");
+let newWord = prompt("На какое заменить?");
 
-function task7() {
+let count = 0;
+let newArr = [];
 
-let text = "Привіт, @user1 і @admin! Як справи, @super_user?";
+for(let i = 0; i < words.length; i++){
 
-let regex = /@[A-Za-z0-9_]+/g;
-
-let result = text.match(regex);
-
-alert(result);
+if(words[i] == oldWord){
+newArr.push(newWord);
+count++;
+}else{
+newArr.push(words[i]);
+}
 
 }
 
-
-function task8() {
-
-let card = "1234 5678 9012 3456";
-
-let regex = /^(\d{4}\s?){4}$/;
-
-alert(regex.test(card));
+alert("Старый массив:\n" + words.join(", "));
+alert("Новый массив:\n" + newArr.join(", "));
+alert("Количество замен: " + count);
 
 }
