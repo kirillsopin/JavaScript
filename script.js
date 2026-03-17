@@ -1,115 +1,87 @@
-function task1(){
+let calculator = { a: 0, b: 0 };
 
-let arr = [];
-let arr2 = [];
-
-for(let i = 0; i < 50; i++){
-
-let num = Math.floor(Math.random()*100) - 50;
-
-arr.push(num);
-
-if(num >= -5 && num <= 5){
-arr2.push(num);
+function sum() {
+    calculator.a = +document.getElementById("num1").value;
+    calculator.b = +document.getElementById("num2").value;
+    document.getElementById("calcResult").innerText = calculator.a + calculator.b;
 }
 
+function mul() {
+    calculator.a = +document.getElementById("num1").value;
+    calculator.b = +document.getElementById("num2").value;
+    document.getElementById("calcResult").innerText = calculator.a * calculator.b;
 }
 
-alert("Массив:\n" + arr.join(", "));
-alert("Числа от -5 до 5:\n" + arr2.join(", "));
-alert("Количество: " + arr2.length);
+let time = { hours: 20, minutes: 30, seconds: 45 };
 
+function updateTime() {
+    document.getElementById("timeDisplay").innerText =
+        String(time.hours).padStart(2,'0') + ":" +
+        String(time.minutes).padStart(2,'0') + ":" +
+        String(time.seconds).padStart(2,'0');
 }
 
-
-
-function task2(){
-
-let arr = [];
-
-for(let i = 0; i < 20; i++){
-arr.push(Math.floor(Math.random()*100) - 50);
+function normalize() {
+    if (time.seconds >= 60) {
+        time.minutes += Math.floor(time.seconds / 60);
+        time.seconds %= 60;
+    }
+    if (time.minutes >= 60) {
+        time.hours += Math.floor(time.minutes / 60);
+        time.minutes %= 60;
+    }
+    if (time.hours >= 24) {
+        time.hours %= 24;
+    }
 }
 
-let sum = 0;
-let minPositive = 1000;
-
-for(let i = 0; i < arr.length; i++){
-
-if(arr[i] < 0){
-sum += arr[i];
+function addSec() {
+    time.seconds += 30;
+    normalize();
+    updateTime();
 }
 
-if(arr[i] > 0 && arr[i] < minPositive){
-minPositive = arr[i];
+function addMin() {
+    time.minutes += 10;
+    normalize();
+    updateTime();
 }
 
+function addHr() {
+    time.hours += 1;
+    normalize();
+    updateTime();
 }
 
-if(sum < -100){
-sum = sum + minPositive;
+updateTime();
+
+let Automobile = {
+    color: "чорний",
+    model: "BMW",
+    year: 2020,
+    manufact: "Німеччина",
+    name: "Іван",
+    experience: 5
+};
+
+function showAuto() {
+    document.getElementById("autoOutput").innerText =
+        `${Automobile.model}, ${Automobile.year}, ${Automobile.color}, ${Automobile.manufact}`;
 }
 
-alert("Массив:\n" + arr.join(", "));
-alert("Результат: " + sum);
-
+function showDriver() {
+    document.getElementById("autoOutput").innerText =
+        `${Automobile.name}, стаж: ${Automobile.experience} років`;
 }
 
-
-
-function task3(){
-
-let arr = [];
-
-for(let i = 0; i < 6; i++){
-arr.push(Math.floor(Math.random()*50));
+function checkYear() {
+    let y = prompt("Введіть рік");
+    document.getElementById("autoOutput").innerText =
+        (y == Automobile.year) ? "Підходить" : "Жаль";
 }
 
-let diff = [];
-
-for(let i = 0; i < arr.length-1; i++){
-diff.push(arr[i+1] - arr[i]);
-}
-
-alert("Исходный массив:\n" + arr.join(", "));
-alert("Массив разницы:\n" + diff.join(", "));
-
-}
-
-
-
-function task4(){
-
-let words = [];
-let w = prompt("Введите слово (пусто чтобы закончить)");
-
-while(w != ""){
-
-words.push(w);
-
-w = prompt("Введите слово (пусто чтобы закончить)");
-
-}
-
-let oldWord = prompt("Какое слово заменить?");
-let newWord = prompt("На какое заменить?");
-
-let count = 0;
-let newArr = [];
-
-for(let i = 0; i < words.length; i++){
-
-if(words[i] == oldWord){
-newArr.push(newWord);
-count++;
-}else{
-newArr.push(words[i]);
-}
-
-}
-
-alert("Старый массив:\n" + words.join(", "));
-alert("Новый массив:\n" + newArr.join(", "));
-alert("Количество замен: " + count);
-
+function changeColor() {
+    let c = prompt("Новий колір");
+    Automobile.color = c;
+    showAuto();
 }
