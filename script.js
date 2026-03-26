@@ -1,87 +1,99 @@
-let calculator = { a: 0, b: 0 };
-
-function sum() {
-    calculator.a = +document.getElementById("num1").value;
-    calculator.b = +document.getElementById("num2").value;
-    document.getElementById("calcResult").innerText = calculator.a + calculator.b;
-}
-
-function mul() {
-    calculator.a = +document.getElementById("num1").value;
-    calculator.b = +document.getElementById("num2").value;
-    document.getElementById("calcResult").innerText = calculator.a * calculator.b;
-}
-
-let time = { hours: 20, minutes: 30, seconds: 45 };
-
-function updateTime() {
-    document.getElementById("timeDisplay").innerText =
-        String(time.hours).padStart(2,'0') + ":" +
-        String(time.minutes).padStart(2,'0') + ":" +
-        String(time.seconds).padStart(2,'0');
-}
-
-function normalize() {
-    if (time.seconds >= 60) {
-        time.minutes += Math.floor(time.seconds / 60);
-        time.seconds %= 60;
+class News {
+    constructor(title, text, tags, date) {
+        this.title = title;
+        this.text = text;
+        this.tags = tags;
+        this.date = new Date(date);
     }
-    if (time.minutes >= 60) {
-        time.hours += Math.floor(time.minutes / 60);
-        time.minutes %= 60;
-    }
-    if (time.hours >= 24) {
-        time.hours %= 24;
+
+    formatDate() {
+        const now = new Date();
+        const diffDays = Math.floor((now - this.date) / (1000 * 60 * 60 * 24));
+
+        if (diffDays < 1) return "сьогодні";
+        if (diffDays < 7) return `${diffDays} днів тому`;
+
+        return `${String(this.date.getDate()).padStart(2, '0')}.${String(this.date.getMonth() + 1).padStart(2, '0')}.${this.date.getFullYear()}`;
     }
 }
 
-function addSec() {
-    time.seconds += 30;
-    normalize();
-    updateTime();
+
+class NewsFeed {
+    constructor() {
+        this.newsList = JSON.parse(localStorage.getItem("news")) || [];
+    }
+
+    save() {
+        localStorage.setItem("news", JSON.stringify(this.newsList));
+    }
+
+    addNews(news) {
+        this.newsList.push(news);
+        this.save();
+        render();
+    }
+
+    deleteNews(index) {
+        this.newsList.splice(index, 1);
+        this.save();
+        render();
+    }
+
+    sortByDate() {
+        this.newsList.sort((a, b) => new Date(b.date) - new Date(a.date));
+        this.save();
+        render();
+    }
+
+    findByTag(tag) {
+        return this.newsList.filter(n => n.tags.includes(tag));
+    }
 }
 
-function addMin() {
-    time.minutes += 10;
-    normalize();
-    updateTime();
+
+const feed = new NewsFeed();
+
+function render(data = feed.newsList) {
+    const container = document.getElementById("newsList");
+    container.innerHTML = "";
+
+    data.forEach((n, index) => {
+        const news = new News(n.title, n.text, n.tags, n.date);
+
+        container.innerHTML += `
+            <div class="news">
+                <h3>${news.title}</h3>
+                <p>${news.text}</p>
+                <p><b>Теги:</b> ${news.tags.join(", ")}</p>
+                <p><b>Дата:</b> ${news.formatDate()}</p>
+                <button onclick="deleteNews(${index})">Видалити</button>
+            </div>
+        `;
+    });
 }
 
-function addHr() {
-    time.hours += 1;
-    normalize();
-    updateTime();
+function addNews() {
+    const title = document.getElementById("title").value;
+    const text = document.getElementById("text").value;
+    const tags = document.getElementById("tags").value.split(",").map(t => t.trim());
+
+    if (!title || !text) return alert("Заповни поля");
+
+    feed.addNews(new News(title, text, tags, new Date()));
 }
 
-updateTime();
-
-let Automobile = {
-    color: "чорний",
-    model: "BMW",
-    year: 2020,
-    manufact: "Німеччина",
-    name: "Іван",
-    experience: 5
-};
-
-function showAuto() {
-    document.getElementById("autoOutput").innerText =
-        `${Automobile.model}, ${Automobile.year}, ${Automobile.color}, ${Automobile.manufact}`;
+function deleteNews(index) {
+    feed.deleteNews(index);
 }
 
-function showDriver() {
-    document.getElementById("autoOutput").innerText =
-        `${Automobile.name}, стаж: ${Automobile.experience} років`;
+function sortNews() {
+    feed.sortByDate();
 }
 
-function checkYear() {
-    let y = prompt("Введіть рік");
-    document.getElementById("autoOutput").innerText =
-        (y == Automobile.year) ? "Підходить" : "Жаль";
+function searchByTag() {
+    const tag = document.getElementById("searchTag").value;
+    const result = feed.findByTag(tag);
+    render(result);
 }
 
-function changeColor() {
-    let c = prompt("Новий колір");
-    Automobile.color = c;
-    showAuto();
-}
+render();
