@@ -2,55 +2,86 @@
 <html lang="uk">
 <head>
     <meta charset="UTF-8">
-    <title>Новинна стрічка</title>
+    <title>Домашня Робота</title>
+
     <style>
         body {
-            font-family: Arial;
-            background: #f4f6fb;
+            font-family: Arial, sans-serif;
+            background-color: #f4f6f8;
+            text-align: center;
+            margin: 0;
             padding: 20px;
         }
 
         h1 {
-            text-align: center;
+            color: #333;
         }
 
-        input, button {
+        h2 {
+            margin-top: 30px;
+            color: #444;
+        }
+
+        button {
+            padding: 10px 15px;
             margin: 5px;
-            padding: 8px;
+            border: none;
+            background-color: #4CAF50;
+            color: white;
+            cursor: pointer;
+            border-radius: 5px;
         }
 
-        .news {
-            background: white;
-            padding: 15px;
-            margin-top: 10px;
-            border-radius: 10px;
+        button:hover {
+            background-color: #45a049;
         }
 
-        .controls {
-            margin-bottom: 15px;
+        #output {
+            margin-top: 20px;
+            display: flex;
+            justify-content: center;
+        }
+
+        table {
+            border-collapse: collapse;
+            width: 60%;
+            background-color: white;
+            box-shadow: 0 0 10px rgba(0,0,0,0.1);
+        }
+
+        th, td {
+            padding: 10px;
+            border: 1px solid #ddd;
+        }
+
+        th {
+            background-color: #4CAF50;
+            color: white;
+        }
+
+        tr:nth-child(even) {
+            background-color: #f2f2f2;
         }
     </style>
 </head>
 <body>
 
-<h1>Новинна стрічка</h1>
+<h1>Домашня Робота</h1>
 
-<div class="controls">
-    <input type="text" id="title" placeholder="Заголовок">
-    <input type="text" id="text" placeholder="Текст">
-    <input type="text" id="tags" placeholder="Теги (через кому)">
-    <button onclick="addNews()">Додати новину</button>
+<h2>Завдання 1 та 2</h2>
+<button onclick="showTable()">Показати таблицю</button>
+<button onclick="showStyledTable()">Показати стилізовану таблицю</button>
 
-    <br>
+<h2>CoffeeMachine</h2>
+<button onclick="startCoffee()">Запустити кавоварку</button>
+<button onclick="stopCoffee()">Зупинити кавоварку</button>
 
-    <input type="text" id="searchTag" placeholder="Пошук по тегу">
-    <button onclick="searchByTag()">Пошук</button>
+<h2>Fridge</h2>
+<button onclick="checkFridge()">Перевірити холодильник</button>
 
-    <button onclick="sortNews()">Сортувати за датою</button>
-</div>
-
-<div id="newsList"></div>
+<div id="output"></div>
 
 <script src="script.js"></script>
+
 </body>
 </html>
