@@ -2,84 +2,52 @@
 <html lang="uk">
 <head>
     <meta charset="UTF-8">
-    <title>Домашня Робота</title>
+    <title>SVG + Animation</title>
 
     <style>
         body {
-            font-family: Arial, sans-serif;
-            background-color: #f4f6f8;
-            text-align: center;
-            margin: 0;
-            padding: 20px;
+            font-family: Arial;
+            margin: 20px;
         }
 
-        h1 {
-            color: #333;
+        svg {
+            border: 1px solid #ccc;
+            background: #f5f5f5;
         }
 
-        h2 {
-            margin-top: 30px;
-            color: #444;
+        .panel {
+            margin-top: 20px;
         }
 
         button {
-            padding: 10px 15px;
-            margin: 5px;
-            border: none;
-            background-color: #4CAF50;
-            color: white;
-            cursor: pointer;
-            border-radius: 5px;
+            margin-right: 10px;
+            padding: 8px 12px;
         }
 
-        button:hover {
-            background-color: #45a049;
-        }
-
-        #output {
-            margin-top: 20px;
-            display: flex;
-            justify-content: center;
-        }
-
-        table {
-            border-collapse: collapse;
-            width: 60%;
-            background-color: white;
-            box-shadow: 0 0 10px rgba(0,0,0,0.1);
-        }
-
-        th, td {
-            padding: 10px;
+        #animBox {
+            margin-top: 15px;
+            height: 120px;
+            position: relative;
             border: 1px solid #ddd;
-        }
-
-        th {
-            background-color: #4CAF50;
-            color: white;
-        }
-
-        tr:nth-child(even) {
-            background-color: #f2f2f2;
         }
     </style>
 </head>
 <body>
 
-<h1>Домашня Робота</h1>
+<h2>SVG Demo</h2>
+<div id="app"></div>
 
-<h2>Завдання 1 та 2</h2>
-<button onclick="showTable()">Показати таблицю</button>
-<button onclick="showStyledTable()">Показати стилізовану таблицю</button>
+<h2>Animation Demo</h2>
+<div class="panel">
+    <div id="animBox"></div>
 
-<h2>CoffeeMachine</h2>
-<button onclick="startCoffee()">Запустити кавоварку</button>
-<button onclick="stopCoffee()">Зупинити кавоварку</button>
-
-<h2>Fridge</h2>
-<button onclick="checkFridge()">Перевірити холодильник</button>
-
-<div id="output"></div>
+    <div style="margin-top:10px;">
+        <button onclick="startAnim()">Start</button>
+        <button onclick="pauseAnim()">Pause</button>
+        <button onclick="resumeAnim()">Resume</button>
+        <button onclick="stopAnim()">Stop</button>
+    </div>
+</div>
 
 <script src="script.js"></script>
 

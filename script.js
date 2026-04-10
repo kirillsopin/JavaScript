@@ -1,176 +1,178 @@
-function Employee(name, position, salary) {
-    this.name = name;
-    this.position = position;
-    this.salary = salary;
-}
-
-function EmpTable(employees) {
-    this.employees = employees;
-}
-
-EmpTable.prototype.getHtml = function () {
-    let result = "<table>";
-    result += "<tr><th>Ім'я</th><th>Посада</th><th>Зарплата</th></tr>";
-
-    for (let i = 0; i < this.employees.length; i++) {
-        let emp = this.employees[i];
-        result += "<tr>";
-        result += "<td>" + emp.name + "</td>";
-        result += "<td>" + emp.position + "</td>";
-        result += "<td>" + emp.salary + "</td>";
-        result += "</tr>";
+class SvgElement {
+    constructor(tag) {
+        this.tag = tag;
+        this.attrs = {};
+        this.styles = {};
+        this.children = [];
     }
 
-    result += "</table>";
-    return result;
-};
+    setAttribute(name, value) {
+        this.attrs[name] = value;
+    }
 
-function StyledEmpTable(employees) {
-    EmpTable.call(this, employees);
-}
+    setStyle(name, value) {
+        this.styles[name] = value;
+    }
 
-StyledEmpTable.prototype = Object.create(EmpTable.prototype);
-StyledEmpTable.prototype.constructor = StyledEmpTable;
+    appendChild(child) {
+        this.children.push(child);
+    }
 
-StyledEmpTable.prototype.getStyles = function () {
-    return "<style>th{background:lightblue;}</style>";
-};
+    getSvg() {
+        const attrs = Object.entries(this.attrs)
+            .map(([k, v]) => `${k}="${v}"`)
+            .join(" ");
 
-StyledEmpTable.prototype.getHtml = function () {
-    return this.getStyles() + EmpTable.prototype.getHtml.call(this);
-};
+        const styles = Object.entries(this.styles)
+            .map(([k, v]) => `${k}:${v};`)
+            .join(" ");
 
-function Machine(power) {
-    this._power = power;
-    this._enabled = false;
-}
+        const styleAttr = styles ? ` style="${styles}"` : "";
 
-Machine.prototype.enable = function () {
-    this._enabled = true;
-};
+        const children = this.children
+            .map(c => c.getSvg())
+            .join("");
 
-Machine.prototype.disable = function () {
-    this._enabled = false;
-};
-
-function CoffeeMachine(power, capacity) {
-    Machine.call(this, power);
-
-    let waterAmount = 0;
-    let timerId;
-
-    this.capacity = capacity;
-
-    this.setWaterAmount = function (amount) {
-        if (amount < 0) throw new Error("Вода має бути додатньою");
-        if (amount > capacity) throw new Error("Забагато води");
-        waterAmount = amount;
-    };
-
-    this.getWaterAmount = function () {
-        return waterAmount;
-    };
-
-    this.getBoilTime = function () {
-        return waterAmount * 4200 * 80 / power;
-    };
-
-    this.onReady = function () {
-        alert("Кава готова!");
-    };
-
-    this.run = function () {
-        if (!this._enabled) throw new Error("Кавоварка вимкнена");
-
-        alert("Кавоварка включена");
-
-        timerId = setTimeout(this.onReady, this.getBoilTime());
-    };
-
-    this.stop = function () {
-        clearTimeout(timerId);
-        alert("Кавоварка вимкнена");
-    };
-}
-
-CoffeeMachine.prototype = Object.create(Machine.prototype);
-CoffeeMachine.prototype.constructor = CoffeeMachine;
-
-function Fridge(power) {
-    Machine.call(this, power);
-
-    let food = [];
-
-    this.addFood = function () {
-        if (!this._enabled) throw new Error("Вимкнений холодильник");
-
-        if (food.length + arguments.length > power / 100) {
-            throw new Error("Забагато їжі");
-        }
-
-        for (let i = 0; i < arguments.length; i++) {
-            food.push(arguments[i]);
-        }
-    };
-
-    this.getFood = function () {
-        return food.slice();
-    };
-
-    this.disable = function () {
-        if (food.length > 0) {
-            throw new Error("Є їжа — не можна вимкнути");
-        }
-        Machine.prototype.disable.call(this);
-    };
-}
-
-Fridge.prototype = Object.create(Machine.prototype);
-Fridge.prototype.constructor = Fridge;
-
-let employees = [
-    new Employee("Іван", "Менеджер", 10000),
-    new Employee("Олена", "Бухгалтер", 8000),
-    new Employee("Петро", "Касир", 6000)
-];
-
-let coffee = new CoffeeMachine(1000, 500);
-
-function showTable() {
-    let table = new EmpTable(employees);
-    document.getElementById("output").innerHTML = table.getHtml();
-}
-
-function showStyledTable() {
-    let table = new StyledEmpTable(employees);
-    document.getElementById("output").innerHTML = table.getHtml();
-}
-
-function startCoffee() {
-    try {
-        coffee.enable();
-        coffee.setWaterAmount(200);
-        coffee.run();
-    } catch (e) {
-        alert(e.message);
+        return `<${this.tag} ${attrs}${styleAttr}>${children}</${this.tag}>`;
     }
 }
 
-function stopCoffee() {
-    coffee.stop();
+class SvgStyle {
+    constructor(className) {
+        this.className = className;
+        this.styles = {};
+    }
+
+    setStyle(name, value) {
+        this.styles[name] = value;
+    }
+
+    removeStyle(name) {
+        delete this.styles[name];
+    }
+
+    getCss() {
+        const styles = Object.entries(this.styles)
+            .map(([k, v]) => `${k}: ${v};`)
+            .join(" ");
+
+        return `.${this.className} { ${styles} }`;
+    }
 }
 
-function checkFridge() {
-    try {
-        let fridge = new Fridge(500);
-        fridge.enable();
-        fridge.addFood("Молоко", "Сир");
+class SvgBlock {
+    constructor() {
+        this.styles = [];
+        this.root = new SvgElement("svg");
 
-        document.getElementById("output").innerHTML =
-            "Продукти: " + fridge.getFood().join(", ");
-
-        fridge.disable();
-    } catch (e) {
-        alert(e.message);
+        this.root.setAttribute("xmlns", "http://www.w3.org/2000/svg");
+        this.root.setAttribute("width", 300);
+        this.root.setAttribute("height", 200);
     }
+
+    addStyle(style) {
+        this.styles.push(style);
+    }
+
+    getCode() {
+        const css = this.styles.map(s => s.getCss()).join("\n");
+        const svg = this.root.getSvg();
+
+        return `<style>${css}</style>${svg}`;
+    }
+}
+
+const redStyle = new SvgStyle("red");
+redStyle.setStyle("fill", "red");
+redStyle.setStyle("stroke", "black");
+
+const blueStyle = new SvgStyle("blue");
+blueStyle.setStyle("fill", "blue");
+
+const circle = new SvgElement("circle");
+circle.setAttribute("cx", 80);
+circle.setAttribute("cy", 80);
+circle.setAttribute("r", 40);
+circle.setAttribute("class", "red");
+
+const rect = new SvgElement("rect");
+rect.setAttribute("x", 150);
+rect.setAttribute("y", 50);
+rect.setAttribute("width", 100);
+rect.setAttribute("height", 80);
+rect.setAttribute("class", "blue");
+
+const group = new SvgElement("g");
+group.appendChild(circle);
+group.appendChild(rect);
+
+const block = new SvgBlock();
+block.addStyle(redStyle);
+block.addStyle(blueStyle);
+
+block.root.appendChild(group);
+
+document.getElementById("app").innerHTML = block.getCode();
+
+class Animator {
+    constructor(el) {
+        this.el = el;
+        this.name = "moveAnim";
+    }
+
+    createAnimation() {
+        const style = document.createElement("style");
+
+        style.innerHTML = `
+        @keyframes ${this.name} {
+            0% { transform: translate(0px, 0px); }
+            50% { transform: translate(200px, 80px); }
+            100% { transform: translate(0px, 0px); }
+        }`;
+
+        document.head.appendChild(style);
+    }
+
+    start() {
+        this.el.style.animation = `${this.name} 3s linear infinite`;
+    }
+
+    pause() {
+        this.el.style.animationPlayState = "paused";
+    }
+
+    resume() {
+        this.el.style.animationPlayState = "running";
+    }
+
+    stop() {
+        this.el.style.animation = "none";
+    }
+}
+
+const box = document.createElement("div");
+box.style.width = "60px";
+box.style.height = "60px";
+box.style.background = "tomato";
+box.style.position = "relative";
+
+document.getElementById("animBox").appendChild(box);
+
+const animator = new Animator(box);
+animator.createAnimation();
+
+function startAnim() {
+    animator.start();
+}
+
+function pauseAnim() {
+    animator.pause();
+}
+
+function resumeAnim() {
+    animator.resume();
+}
+
+function stopAnim() {
+    animator.stop();
 }
