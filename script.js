@@ -1,178 +1,175 @@
-class SvgElement {
-    constructor(tag) {
-        this.tag = tag;
-        this.attrs = {};
+class CssClass {
+    constructor(name) {
+        this.name = name;
         this.styles = {};
-        this.children = [];
+    }
+
+    setStyle(prop, value) {
+        this.styles[prop] = value;
+    }
+
+    getCss() {
+        let css = `.${this.name}{`;
+        for (let k in this.styles) {
+            css += `${k}:${this.styles[k]};`;
+        }
+        css += `}`;
+        return css;
+    }
+}
+
+class HtmlElement {
+    constructor(tag, text = "") {
+        this.tag = tag;
+        this.text = text;
+        this.attrs = {};
     }
 
     setAttribute(name, value) {
         this.attrs[name] = value;
     }
 
-    setStyle(name, value) {
-        this.styles[name] = value;
-    }
-
-    appendChild(child) {
-        this.children.push(child);
-    }
-
-    getSvg() {
-        const attrs = Object.entries(this.attrs)
-            .map(([k, v]) => `${k}="${v}"`)
-            .join(" ");
-
-        const styles = Object.entries(this.styles)
-            .map(([k, v]) => `${k}:${v};`)
-            .join(" ");
-
-        const styleAttr = styles ? ` style="${styles}"` : "";
-
-        const children = this.children
-            .map(c => c.getSvg())
-            .join("");
-
-        return `<${this.tag} ${attrs}${styleAttr}>${children}</${this.tag}>`;
+    getHtml() {
+        let attrs = "";
+        for (let k in this.attrs) {
+            attrs += ` ${k}="${this.attrs[k]}"`;
+        }
+        return `<${this.tag}${attrs}>${this.text}</${this.tag}>`;
     }
 }
 
-class SvgStyle {
-    constructor(className) {
-        this.className = className;
-        this.styles = {};
-    }
-
-    setStyle(name, value) {
-        this.styles[name] = value;
-    }
-
-    removeStyle(name) {
-        delete this.styles[name];
-    }
-
-    getCss() {
-        const styles = Object.entries(this.styles)
-            .map(([k, v]) => `${k}: ${v};`)
-            .join(" ");
-
-        return `.${this.className} { ${styles} }`;
-    }
-}
-
-class SvgBlock {
+class HtmlBlock {
     constructor() {
-        this.styles = [];
-        this.root = new SvgElement("svg");
-
-        this.root.setAttribute("xmlns", "http://www.w3.org/2000/svg");
-        this.root.setAttribute("width", 300);
-        this.root.setAttribute("height", 200);
+        this.css = [];
+        this.html = [];
     }
 
-    addStyle(style) {
-        this.styles.push(style);
+    addCss(c) {
+        this.css.push(c);
+    }
+
+    addHtml(e) {
+        this.html.push(e);
     }
 
     getCode() {
-        const css = this.styles.map(s => s.getCss()).join("\n");
-        const svg = this.root.getSvg();
+        let style = "<style>";
 
-        return `<style>${css}</style>${svg}`;
+        for (let c of this.css) {
+            style += c.getCss();
+        }
+
+        style += `
+.modalOverlay{
+    display:none;
+    position:fixed;
+    top:0;
+    left:0;
+    width:100%;
+    height:100%;
+    background:rgba(0,0,0,0.55);
+    backdrop-filter: blur(8px);
+    justify-content:center;
+    align-items:center;
+}
+
+.modalBox{
+    background: rgba(255,255,255,0.9);
+    padding: 25px;
+    border-radius: 16px;
+    width: 300px;
+    text-align:center;
+    box-shadow: 0 15px 40px rgba(0,0,0,0.3);
+    animation: pop 0.25s ease;
+}
+
+@keyframes pop{
+    from { transform: scale(0.7); opacity:0; }
+    to { transform: scale(1); opacity:1; }
+}
+
+.btn:hover{
+    transform: scale(1.05);
+    background:#4b3cc4;
+}
+
+body{
+    margin:0;
+    height:100vh;
+    display:flex;
+    justify-content:center;
+    align-items:center;
+    font-family: Arial;
+    background: linear-gradient(135deg,#667eea,#764ba2);
+}
+`;
+
+        style += "</style>";
+
+        let html = "";
+        for (let e of this.html) {
+            html += e.getHtml();
+        }
+
+        return style + html;
     }
 }
 
-const redStyle = new SvgStyle("red");
-redStyle.setStyle("fill", "red");
-redStyle.setStyle("stroke", "black");
+let card = new CssClass("card");
+card.setStyle("background", "rgba(255,255,255,0.95)");
+card.setStyle("padding", "40px");
+card.setStyle("border-radius", "18px");
+card.setStyle("text-align", "center");
+card.setStyle("width", "320px");
+card.setStyle("box-shadow", "0 15px 35px rgba(0,0,0,0.2)");
+card.setStyle("backdrop-filter", "blur(10px)");
 
-const blueStyle = new SvgStyle("blue");
-blueStyle.setStyle("fill", "blue");
+let btn = new CssClass("btn");
+btn.setStyle("padding", "12px 18px");
+btn.setStyle("background", "#6c5ce7");
+btn.setStyle("color", "white");
+btn.setStyle("border", "none");
+btn.setStyle("border-radius", "10px");
+btn.setStyle("cursor", "pointer");
+btn.setStyle("transition", "0.3s");
 
-const circle = new SvgElement("circle");
-circle.setAttribute("cx", 80);
-circle.setAttribute("cy", 80);
-circle.setAttribute("r", 40);
-circle.setAttribute("class", "red");
+let title = new HtmlElement("h2", "OOP Modal System");
+let desc = new HtmlElement("p", "Clean centered UI");
 
-const rect = new SvgElement("rect");
-rect.setAttribute("x", 150);
-rect.setAttribute("y", 50);
-rect.setAttribute("width", 100);
-rect.setAttribute("height", 80);
-rect.setAttribute("class", "blue");
+let button = new HtmlElement("button", "Open Modal");
+button.setAttribute("id", "openBtn");
+button.setAttribute("class", "btn");
 
-const group = new SvgElement("g");
-group.appendChild(circle);
-group.appendChild(rect);
+let cardEl = new HtmlElement("div");
+cardEl.setAttribute("class", "card");
+cardEl.text = title.getHtml() + desc.getHtml() + button.getHtml();
 
-const block = new SvgBlock();
-block.addStyle(redStyle);
-block.addStyle(blueStyle);
+let modal = `
+<div id="modal" class="modalOverlay">
+    <div class="modalBox">
+        <h3>Hello</h3>
+        <p>OOP Modal System</p>
+        <button id="closeBtn" class="btn">Close</button>
+    </div>
+</div>
+`;
 
-block.root.appendChild(group);
+let block = new HtmlBlock();
 
-document.getElementById("app").innerHTML = block.getCode();
+block.addCss(card);
+block.addCss(btn);
+block.addHtml(cardEl);
 
-class Animator {
-    constructor(el) {
-        this.el = el;
-        this.name = "moveAnim";
-    }
+document.getElementById("app").innerHTML = block.getCode() + modal;
 
-    createAnimation() {
-        const style = document.createElement("style");
+document.getElementById("openBtn").onclick = function () {
+    document.getElementById("modal").style.display = "flex";
+};
 
-        style.innerHTML = `
-        @keyframes ${this.name} {
-            0% { transform: translate(0px, 0px); }
-            50% { transform: translate(200px, 80px); }
-            100% { transform: translate(0px, 0px); }
-        }`;
+document.getElementById("closeBtn").onclick = function () {
+    document.getElementById("modal").style.display = "none";
+};
 
-        document.head.appendChild(style);
-    }
-
-    start() {
-        this.el.style.animation = `${this.name} 3s linear infinite`;
-    }
-
-    pause() {
-        this.el.style.animationPlayState = "paused";
-    }
-
-    resume() {
-        this.el.style.animationPlayState = "running";
-    }
-
-    stop() {
-        this.el.style.animation = "none";
-    }
-}
-
-const box = document.createElement("div");
-box.style.width = "60px";
-box.style.height = "60px";
-box.style.background = "tomato";
-box.style.position = "relative";
-
-document.getElementById("animBox").appendChild(box);
-
-const animator = new Animator(box);
-animator.createAnimation();
-
-function startAnim() {
-    animator.start();
-}
-
-function pauseAnim() {
-    animator.pause();
-}
-
-function resumeAnim() {
-    animator.resume();
-}
-
-function stopAnim() {
-    animator.stop();
-}
+setTimeout(() => {
+    document.getElementById("modal").style.display = "flex";
+}, 3000);
